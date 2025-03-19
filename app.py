@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import random
+import time
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
@@ -45,6 +46,10 @@ st.markdown("""
             font-size: 20px;
             padding: 10px;
             border-radius: 10px;
+            width: 100%;
+            display: block;
+            margin: 0 auto;
+            text-align: center;
         }
         .stButton>button:hover {
             background-color: #C70039 !important;
@@ -101,7 +106,7 @@ data = load_and_prepare_data()
 model, feature_columns = train_model(data)
 
 # --- Page Title ---
-st.markdown("<h1 style='text-align: center; color: #FFC300;'>🔥 Ultimate Personal Fitness Tracker 🔥</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #FFC300;'>🔥 Personal Fitness Tracker 🔥</h1>", unsafe_allow_html=True)
 st.markdown("<h4 style='text-align: center; color: #FFD700;'>Enter Your Details to Estimate Calories Burned</h4>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
 
@@ -119,7 +124,10 @@ with st.form("user_input_form"):
         body_temp = st.text_input("🌡️ Body Temperature (°C) (36.0-42.0)", value="37.0", help="Enter a value between 36.0 and 42.0°C.")
         gender = st.radio("⚤ Select Gender", ["Male", "Female"], horizontal=True)
 
+    # --- Centered Submit Button ---
+    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
     submit_button = st.form_submit_button("🔥 Predict Calories Burned")
+    st.markdown("</div>", unsafe_allow_html=True)
 
     # --- Footer (Designed by You) ---
     st.markdown("<div class='footer'>🔥 App Designed by <b>T.HARIKRISHNA</b></div>", unsafe_allow_html=True)
@@ -172,7 +180,10 @@ if submit_button:
                 </div>
             """, unsafe_allow_html=True)
 
-            st.balloons()  # Fun animation on success
+            # --- Slow Balloon Animation ---
+            for _ in range(5):
+                time.sleep(0.5)  # Slow down effect
+                st.balloons()
 
     except ValueError:
         st.error("❌ Please enter valid numerical values for all fields.")
