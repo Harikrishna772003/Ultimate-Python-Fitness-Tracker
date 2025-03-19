@@ -1,15 +1,70 @@
-from textual.app import App, ComposeResult
-from textual.widgets import Header, Footer, Input, Button, Static, Slider, Select
-from textual.containers import Vertical, Horizontal
+import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
-# Load and prepare data
+# --- Page Configuration ---
+st.set_page_config(
+    page_title="🔥 Personal Fitness Tracker",
+    page_icon="💪",
+    layout="wide"
+)
+
+# --- Custom CSS for Stylish UI ---
+st.markdown("""
+    <style>
+        body {
+            background-color: #1E1E1E;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        .stTextInput>div>div>input {
+            background-color: #333;
+            color: white;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .stRadio>div>label {
+            color: white;
+            font-weight: bold;
+        }
+        .stButton>button {
+            background-color: #FF5733 !important;
+            color: white !important;
+            font-size: 20px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .stButton>button:hover {
+            background-color: #C70039 !important;
+        }
+        .result-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #FFC300;
+        }
+        .footer {
+            text-align: center;
+            font-size: 16px;
+            color: #FFD700;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- Load and Prepare Data ---
+@st.cache_data
 def load_and_prepare_data():
-    calories = pd.read_csv(""C:\Fitness Tracker\Project3_files\Implementation of Personal Fitness Tracker using Python\calories.csv"")
-    exercise = pd.read_csv(""C:\Fitness Tracker\Project3_files\Implementation of Personal Fitness Tracker using Python\exercise.csv"")
+    calories = pd.read_csv("calories.csv")
+    exercise = pd.read_csv("exercise.csv")
 
     df = exercise.merge(calories, on="User_ID").drop(columns="User_ID")
     df["BMI"] = df["Weight"] / ((df["Height"] / 100) ** 2)
@@ -19,68 +74,90 @@ def load_and_prepare_data():
 
     return df
 
-# Train the model
+# --- Train Model ---
+@st.cache_resource
 def train_model(df):
     X = df.drop("Calories", axis=1)
     y = df["Calories"]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
+
     model = RandomForestRegressor(n_estimators=1000, max_features=3, max_depth=6)
     model.fit(X_train, y_train)
+
     return model, X_train.columns
 
-# Load model
+# --- Load Model ---
 data = load_and_prepare_data()
 model, feature_columns = train_model(data)
 
-class FitnessApp(App):
-    """A Textual Terminal UI for a Fitness Tracker"""
+# --- Page Title ---
+st.markdown("<h1 style='text-align: center; color: #FFC300;'>🔥 Personal Fitness Tracker 🔥</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center; color: #FFD700;'>Enter Your Details to Estimate Calories Burned</h4>", unsafe_allow_html=True)
+st.markdown("<hr>", unsafe_allow_html=True)
 
-    def compose(self) -> ComposeResult:
-        """Define the UI layout"""
-        yield Header()
-        yield Static("🔥 **Personal Fitness Tracker** 🔥", classes="title")
-        
-        with Vertical():
-            yield Static("Enter your details:")
-            yield Slider(name="age", label="Age", min=10, max=100, step=1, value=30)
-            yield Slider(name="bmi", label="BMI", min=15, max=40, step=0.1, value=22.5)
-            yield Slider(name="duration", label="Duration (min)", min=0, max=35, step=1, value=15)
-            yield Slider(name="heart_rate", label="Heart Rate", min=60, max=130, step=1, value=80)
-            yield Slider(name="body_temp", label="Body Temp (°C)", min=36, max=42, step=0.1, value=37.0)
-            yield Select([("Male", "1"), ("Female", "0")], name="gender", label="Gender")
+# --- User Input Form ---
+with st.form("user_input_form"):
+    col1, col2 = st.columns(2)
 
-        with Horizontal():
-            yield Button("Predict Calories", name="predict", variant="primary")
-            yield Static("", name="result", classes="result")
+    with col1:
+        age = st.text_input("🎂 Enter Your Age (10-100)", value="30", help="Enter a value between 10 and 100.")
+        bmi = st.text_input("⚖️ Enter Your BMI (15.0-40.0)", value="22.5", help="Enter a value between 15.0 and 40.0.")
+        duration = st.text_input("⏳ Exercise Duration (min) (0-35)", value="15", help="Enter a value between 0 and 35 minutes.")
 
-        yield Footer()
+    with col2:
+        heart_rate = st.text_input("❤️ Heart Rate (bpm) (60-130)", value="80", help="Enter a value between 60 and 130 bpm.")
+        body_temp = st.text_input("🌡️ Body Temperature (°C) (36.0-42.0)", value="37.0", help="Enter a value between 36.0 and 42.0°C.")
+        gender = st.radio("⚤ Select Gender", ["Male", "Female"], horizontal=True)
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Handle button press to predict calories"""
-        if event.button.name == "predict":
-            age = self.query_one("#age", Slider).value
-            bmi = self.query_one("#bmi", Slider).value
-            duration = self.query_one("#duration", Slider).value
-            heart_rate = self.query_one("#heart_rate", Slider).value
-            body_temp = self.query_one("#body_temp", Slider).value
-            gender = int(self.query_one("#gender", Select).value)
+    submit_button = st.form_submit_button("🔥 Predict Calories Burned")
 
+    # --- Footer (Designed by You) ---
+    st.markdown("<div class='footer'>🔥 App Designed by <b>T.HARIKRISHNA</b></div>", unsafe_allow_html=True)
+
+# --- Convert Inputs & Predict ---
+if submit_button:
+    try:
+        # Convert input values
+        age = int(age)
+        bmi = float(bmi)
+        duration = int(duration)
+        heart_rate = int(heart_rate)
+        body_temp = float(body_temp)
+        gender_value = 1 if gender == "Male" else 0  # Convert to numerical
+
+        # Validate input ranges
+        if not (10 <= age <= 100):
+            st.error("❌ Age must be between 10 and 100.")
+        elif not (15.0 <= bmi <= 40.0):
+            st.error("❌ BMI must be between 15.0 and 40.0.")
+        elif not (0 <= duration <= 35):
+            st.error("❌ Exercise duration must be between 0 and 35 minutes.")
+        elif not (60 <= heart_rate <= 130):
+            st.error("❌ Heart rate must be between 60 and 130 bpm.")
+        elif not (36.0 <= body_temp <= 42.0):
+            st.error("❌ Body temperature must be between 36.0 and 42.0°C.")
+        else:
+            # Prepare input data
             user_data = {
                 "Age": age,
                 "BMI": bmi,
                 "Duration": duration,
                 "Heart_Rate": heart_rate,
                 "Body_Temp": body_temp,
-                "Gender_male": gender,
+                "Gender_male": gender_value,
             }
 
             df = pd.DataFrame([user_data])
-            df = df.reindex(columns=feature_columns, fill_value=0)
+            df = df.reindex(columns=feature_columns, fill_value=0)  # Ensure correct column order
             prediction = model.predict(df)
 
-            result_text = f"🔥 Estimated Calories Burned: **{round(prediction[0], 2)} kcal** 🔥"
-            self.query_one("#result", Static).update(result_text)
+            st.markdown(f"""
+                <div class='result-box'>
+                    🔥 Estimated Calories Burned: <b>{round(prediction[0], 2)} kcal</b> 🔥
+                </div>
+            """, unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    app = FitnessApp()
-    app.run()
+            st.balloons()  # Fun animation on success
+
+    except ValueError:
+        st.error("❌ Please enter valid numerical values for all fields.")
