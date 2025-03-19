@@ -22,24 +22,9 @@ MOTIVATIONAL_QUOTES = [
     "🥇 Small progress is still progress. Keep going! 🙌"
 ]
 
-# --- Custom CSS for Styling ---
+# --- Custom CSS ---
 st.markdown("""
     <style>
-        body {
-            background-color: #1E1E1E;
-            color: white;
-            font-family: 'Arial', sans-serif;
-        }
-        .stTextInput>div>div>input {
-            background-color: #333;
-            color: white;
-            border-radius: 10px;
-            padding: 10px;
-        }
-        .stRadio>div>label {
-            color: white;
-            font-weight: bold;
-        }
         .centered-button {
             display: flex;
             justify-content: center;
@@ -67,13 +52,12 @@ st.markdown("""
             font-size: 22px;
             font-weight: bold;
             color: #FFC300;
-            margin-top: 20px;
         }
         .footer {
             text-align: center;
             font-size: 16px;
             color: #FFD700;
-            margin-top: 20px;
+            margin-top: 10px;
             padding: 10px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
@@ -121,13 +105,13 @@ with st.form("user_input_form"):
     col1, col2 = st.columns(2)
 
     with col1:
-        age = st.text_input("🎂 Enter Your Age (10-100)", value="30", help="Enter a value between 10 and 100.")
-        bmi = st.text_input("⚖️ Enter Your BMI (15.0-40.0)", value="22.5", help="Enter a value between 15.0 and 40.0.")
-        duration = st.text_input("⏳ Exercise Duration (min) (0-35)", value="15", help="Enter a value between 0 and 35 minutes.")
+        age = st.text_input("🎂 Enter Your Age (10-100)", value="30")
+        bmi = st.text_input("⚖️ Enter Your BMI (15.0-40.0)", value="22.5")
+        duration = st.text_input("⏳ Exercise Duration (min) (0-35)", value="15")
 
     with col2:
-        heart_rate = st.text_input("❤️ Heart Rate (bpm) (60-130)", value="80", help="Enter a value between 60 and 130 bpm.")
-        body_temp = st.text_input("🌡️ Body Temperature (°C) (36.0-42.0)", value="37.0", help="Enter a value between 36.0 and 42.0°C.")
+        heart_rate = st.text_input("❤️ Heart Rate (bpm) (60-130)", value="80")
+        body_temp = st.text_input("🌡️ Body Temperature (°C) (36.0-42.0)", value="37.0")
         gender = st.radio("⚤ Select Gender", ["Male", "Female"], horizontal=True)
 
     # --- Centered Submit Button ---
@@ -183,12 +167,13 @@ if submit_button:
                 </div>
             """, unsafe_allow_html=True)
 
-            # Slow balloon animation
+            # --- Balloon Animation ---
             time.sleep(0.5)
             st.balloons()
 
-            # --- App Designed Footer After the Result ---
+            # --- Footer (Appears Only After Prediction) ---
             st.markdown("<div class='footer'>🔥 App Designed by <b>T.HARIKRISHNA</b></div>", unsafe_allow_html=True)
 
     except ValueError:
         st.error("❌ Please enter valid numerical values for all fields.")
+
