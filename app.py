@@ -67,12 +67,13 @@ st.markdown("""
             font-size: 22px;
             font-weight: bold;
             color: #FFC300;
+            margin-top: 20px;
         }
         .footer {
             text-align: center;
             font-size: 16px;
             color: #FFD700;
-            margin-top: 10px;
+            margin-top: 20px;
             padding: 10px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
@@ -134,9 +135,6 @@ with st.form("user_input_form"):
     submit_button = st.form_submit_button("🔥 Predict Calories Burned")
     st.markdown("</div>", unsafe_allow_html=True)
 
-    # --- Footer (Designed by You) ---
-    st.markdown("<div class='footer'>🔥 App Designed by <b>T.HARIKRISHNA</b></div>", unsafe_allow_html=True)
-
 # --- Convert Inputs & Predict ---
 if submit_button:
     try:
@@ -185,9 +183,12 @@ if submit_button:
                 </div>
             """, unsafe_allow_html=True)
 
-            # --- Balloon Animation ---
+            # Slow balloon animation
             time.sleep(0.5)
             st.balloons()
+
+            # --- App Designed Footer After the Result ---
+            st.markdown("<div class='footer'>🔥 App Designed by <b>T.HARIKRISHNA</b></div>", unsafe_allow_html=True)
 
     except ValueError:
         st.error("❌ Please enter valid numerical values for all fields.")
