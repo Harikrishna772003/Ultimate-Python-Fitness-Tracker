@@ -48,4 +48,4 @@ This project follows the **end-to-end machine learning workflow**, including:
 ### **🔹 Step 1: Clone the Repository**
 ```bash
 git clone https://github.com/Harikrishna772003/Ultimate-Python-Fitness-Tracker.git
-cd personal-fitness-tracker
+cd Ultimate-Python-Fitness-Tracker
