@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import random
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
@@ -10,6 +11,15 @@ st.set_page_config(
     page_icon="💪",
     layout="wide"
 )
+
+# --- Motivational Quotes ---
+MOTIVATIONAL_QUOTES = [
+    "💥 Keep pushing, you're stronger than you think! 💪",
+    "🔥 Every drop of sweat is a step closer to your goal! 🚀",
+    "🏆 Consistency beats motivation. Stay committed! 🎯",
+    "🌟 Your only limit is you. Keep moving forward! ⏳",
+    "🥇 Small progress is still progress. Keep going! 🙌"
+]
 
 # --- Custom CSS for Stylish UI ---
 st.markdown("""
@@ -151,9 +161,14 @@ if submit_button:
             df = df.reindex(columns=feature_columns, fill_value=0)  # Ensure correct column order
             prediction = model.predict(df)
 
+            # Select a random motivational quote
+            slogan = random.choice(MOTIVATIONAL_QUOTES)
+
             st.markdown(f"""
                 <div class='result-box'>
                     🔥 Estimated Calories Burned: <b>{round(prediction[0], 2)} kcal</b> 🔥
+                    <br><br>
+                    <i>{slogan}</i>
                 </div>
             """, unsafe_allow_html=True)
 
