@@ -22,7 +22,7 @@ MOTIVATIONAL_QUOTES = [
     "🥇 Small progress is still progress. Keep going! 🙌"
 ]
 
-# --- Custom CSS for Stylish UI ---
+# --- Custom CSS for Styling ---
 st.markdown("""
     <style>
         body {
@@ -40,16 +40,21 @@ st.markdown("""
             color: white;
             font-weight: bold;
         }
+        .centered-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
         .stButton>button {
             background-color: #FF5733 !important;
             color: white !important;
             font-size: 20px;
             padding: 10px;
             border-radius: 10px;
-            width: 100%;
-            display: block;
-            margin: 0 auto;
+            width: 50%;
             text-align: center;
+            display: block;
         }
         .stButton>button:hover {
             background-color: #C70039 !important;
@@ -125,7 +130,7 @@ with st.form("user_input_form"):
         gender = st.radio("⚤ Select Gender", ["Male", "Female"], horizontal=True)
 
     # --- Centered Submit Button ---
-    st.markdown("<div style='text-align: center;'>", unsafe_allow_html=True)
+    st.markdown("<div class='centered-button'>", unsafe_allow_html=True)
     submit_button = st.form_submit_button("🔥 Predict Calories Burned")
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -180,10 +185,9 @@ if submit_button:
                 </div>
             """, unsafe_allow_html=True)
 
-            # --- Slow Balloon Animation ---
-            for _ in range(5):
-                time.sleep(0.5)  # Slow down effect
-                st.balloons()
+            # --- Balloon Animation ---
+            time.sleep(0.5)
+            st.balloons()
 
     except ValueError:
         st.error("❌ Please enter valid numerical values for all fields.")
