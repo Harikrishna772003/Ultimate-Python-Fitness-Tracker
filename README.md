@@ -49,3 +49,6 @@ This project follows the **end-to-end machine learning workflow**, including:
 ```bash
 git clone https://github.com/Harikrishna772003/Ultimate-Python-Fitness-Tracker.git
 cd Ultimate-Python-Fitness-Tracker
+           OR
+use the below link to view my project application
+https://ultimate-python-fitness-tracker-43hphml9hw6heisghhvmsn.streamlit.app/
