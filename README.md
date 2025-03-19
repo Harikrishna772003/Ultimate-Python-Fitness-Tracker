@@ -51,4 +51,5 @@ git clone https://github.com/Harikrishna772003/Ultimate-Python-Fitness-Tracker.g
 cd Ultimate-Python-Fitness-Tracker
            OR
 use the below link to view my project application
+copy&paste url to view
 https://ultimate-python-fitness-tracker-43hphml9hw6heisghhvmsn.streamlit.app/
