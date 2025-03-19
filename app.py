@@ -22,9 +22,28 @@ MOTIVATIONAL_QUOTES = [
     "🥇 Small progress is still progress. Keep going! 🙌"
 ]
 
-# --- Custom CSS ---
+# --- Custom CSS for Styling ---
 st.markdown("""
     <style>
+        body {
+            background-color: #1E1E1E;
+            color: white;
+            font-family: 'Arial', sans-serif;
+        }
+        [data-testid="stAppViewContainer"] {
+            background: url('https://source.unsplash.com/1600x900/?fitness,workout') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .stTextInput>div>div>input, .stNumberInput>div>div>input {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 10px;
+            padding: 10px;
+        }
+        .stRadio>div>label {
+            color: white;
+            font-weight: bold;
+        }
         .centered-button {
             display: flex;
             justify-content: center;
@@ -45,21 +64,22 @@ st.markdown("""
             background-color: #C70039 !important;
         }
         .result-box {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 15px;
             text-align: center;
             font-size: 22px;
             font-weight: bold;
             color: #FFC300;
+            margin-top: 20px;
         }
         .footer {
             text-align: center;
             font-size: 16px;
             color: #FFD700;
-            margin-top: 10px;
+            margin-top: 20px;
             padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
         }
     </style>
@@ -105,13 +125,13 @@ with st.form("user_input_form"):
     col1, col2 = st.columns(2)
 
     with col1:
-        age = st.text_input("🎂 Enter Your Age (10-100)", value="30")
-        bmi = st.text_input("⚖️ Enter Your BMI (15.0-40.0)", value="22.5")
-        duration = st.text_input("⏳ Exercise Duration (min) (0-35)", value="15")
+        age = st.number_input("🎂 Enter Your Age (10-100)", min_value=10, max_value=100, value=30)
+        bmi = st.number_input("⚖️ Enter Your BMI (15.0-40.0)", min_value=15.0, max_value=40.0, value=22.5, step=0.1)
+        duration = st.number_input("⏳ Exercise Duration (min) (0-35)", min_value=0, max_value=35, value=15)
 
     with col2:
-        heart_rate = st.text_input("❤️ Heart Rate (bpm) (60-130)", value="80")
-        body_temp = st.text_input("🌡️ Body Temperature (°C) (36.0-42.0)", value="37.0")
+        heart_rate = st.number_input("❤️ Heart Rate (bpm) (60-130)", min_value=60, max_value=130, value=80)
+        body_temp = st.number_input("🌡️ Body Temperature (°C) (36.0-42.0)", min_value=36.0, max_value=42.0, value=37.0, step=0.1)
         gender = st.radio("⚤ Select Gender", ["Male", "Female"], horizontal=True)
 
     # --- Centered Submit Button ---
@@ -122,58 +142,39 @@ with st.form("user_input_form"):
 # --- Convert Inputs & Predict ---
 if submit_button:
     try:
-        # Convert input values
-        age = int(age)
-        bmi = float(bmi)
-        duration = int(duration)
-        heart_rate = int(heart_rate)
-        body_temp = float(body_temp)
-        gender_value = 1 if gender == "Male" else 0  # Convert to numerical
+        gender_value = 1 if gender == "Male" else 0  
 
-        # Validate input ranges
-        if not (10 <= age <= 100):
-            st.error("❌ Age must be between 10 and 100.")
-        elif not (15.0 <= bmi <= 40.0):
-            st.error("❌ BMI must be between 15.0 and 40.0.")
-        elif not (0 <= duration <= 35):
-            st.error("❌ Exercise duration must be between 0 and 35 minutes.")
-        elif not (60 <= heart_rate <= 130):
-            st.error("❌ Heart rate must be between 60 and 130 bpm.")
-        elif not (36.0 <= body_temp <= 42.0):
-            st.error("❌ Body temperature must be between 36.0 and 42.0°C.")
-        else:
-            # Prepare input data
-            user_data = {
-                "Age": age,
-                "BMI": bmi,
-                "Duration": duration,
-                "Heart_Rate": heart_rate,
-                "Body_Temp": body_temp,
-                "Gender_male": gender_value,
-            }
+        # Prepare input data
+        user_data = {
+            "Age": age,
+            "BMI": bmi,
+            "Duration": duration,
+            "Heart_Rate": heart_rate,
+            "Body_Temp": body_temp,
+            "Gender_male": gender_value,
+        }
 
-            df = pd.DataFrame([user_data])
-            df = df.reindex(columns=feature_columns, fill_value=0)  # Ensure correct column order
-            prediction = model.predict(df)
+        df = pd.DataFrame([user_data])
+        df = df.reindex(columns=feature_columns, fill_value=0)  # Ensure correct column order
+        prediction = model.predict(df)
 
-            # Select a random motivational quote
-            slogan = random.choice(MOTIVATIONAL_QUOTES)
+        # Select a random motivational quote
+        slogan = random.choice(MOTIVATIONAL_QUOTES)
 
-            st.markdown(f"""
-                <div class='result-box'>
-                    🔥 Estimated Calories Burned: <b>{round(prediction[0], 2)} kcal</b> 🔥
-                    <br><br>
-                    <i>{slogan}</i>
-                </div>
-            """, unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class='result-box'>
+                🔥 Estimated Calories Burned: <b>{round(prediction[0], 2)} kcal</b> 🔥
+                <br><br>
+                <i>{slogan}</i>
+            </div>
+        """, unsafe_allow_html=True)
 
-            # --- Balloon Animation ---
-            time.sleep(0.5)
-            st.balloons()
+        # Slow balloon animation
+        time.sleep(0.5)
+        st.balloons()
 
-            # --- Footer (Appears Only After Prediction) ---
-            st.markdown("<div class='footer'>🔥 App Designed by <b>T.HARIKRISHNA</b></div>", unsafe_allow_html=True)
+        # --- App Designed Footer After the Result ---
+        st.markdown("<div class='footer'>🔥 App Designed by <b>T.HARIKRISHNA</b></div>", unsafe_allow_html=True)
 
     except ValueError:
         st.error("❌ Please enter valid numerical values for all fields.")
-
